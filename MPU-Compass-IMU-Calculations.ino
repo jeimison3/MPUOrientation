@@ -1,12 +1,20 @@
-#include "MPU9250.h" // Biblioteca/LIB: https://github.com/bolderflight/MPU9250
-#include <math.h>
+/*
+ * Código de exemplo básico da biblioteca MPU9250.
+ * Modificado com cálculo de Pitch, Roll e Yaw por Jeimison Moreno (https://github.com/jeimison3).
+ * 
+ */
+
+/*  Biblioteca pode ser baixada aqui: https://github.com/jeimison3/MPU9250
+ *  É uma versão modificada para ESP12/ESP32 da biblioteca deste link: https://github.com/bolderflight/MPU9250
+ */
+ 
+#include "MPU9250.h"
+
+#include <math.h> // Calculos complexos e uso da constante M_PI
 
 
 MPU9250 IMU(Wire,0x69); // Conectada com ADO = 1
 int statt;
-
-
-#include "Filter.h"
 
 
 void setup() {
@@ -37,9 +45,8 @@ void setup() {
   /*IMU.calibrateAccel();
   IMU.calibrateGyro();
   IMU.calibrateMag();*/
-  //IMU.setMagCalX(2.02, 1.52);
-  //IMU.setMagCalY(34.76, 1.30);
-  //IMU.setMagCalZ(-68.02, );
+
+  // Calibragem realizada para o ambiente:
 
 
   IMU.setAccelCalX(0.0, 1.0);
@@ -50,10 +57,9 @@ void setup() {
   IMU.setGyroBiasY_rads(-0.03);
   IMU.setGyroBiasZ_rads(0.02);
   
-  IMU.setMagCalX(0.89, 1.55);
-  IMU.setMagCalY(35.97, 1.19);
-  IMU.setMagCalZ(-68.38, 0.66
-);
+  IMU.setMagCalX(4.75, 1.88);
+  IMU.setMagCalY(49.59, 1.18);
+  IMU.setMagCalZ(-67.81, 0.62);
   
 }
 
@@ -105,35 +111,69 @@ void loop() {
     if(v == 1){
       printBiases();
     }
+    else if (v == 10){
+      IMU.calibrateMag();
+    }
   }
   // read the sensor
   IMU.readSensor();
+  char spacing = ' '; // Substitua por \t se preferir
 
   // display the data
   Serial.print(IMU.getAccelX_mss(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getAccelY_mss(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getAccelZ_mss(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getGyroX_rads(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getGyroY_rads(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getGyroZ_rads(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getMagX_uT(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getMagY_uT(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getMagZ_uT(),6);
-  Serial.print("\t");
+  Serial.print(spacing);
   Serial.print(IMU.getTemperature_C(),6);
+
+
+  /*
+   * Cálculos trazidos desta fonte:
+   * https://gist.github.com/shoebahmedadeel/0d8ca4eaa65664492cf1db2ab3a9e572
+   * 
+   * Com algumas adaptações, visto que aqui é usada uma biblioteca que dá valores convertidos
+   * e calibrados.
+   * 
+   * Valores se mostram reais. Por hora, apenas usando acelerômetro e magnetômetro.
+   */
+
   
-  filterUpdate(IMU.getAccelX_mss(), IMU.getAccelY_mss(), IMU.getAccelZ_mss(), IMU.getGyroX_rads(), IMU.getGyroY_rads(), IMU.getGyroZ_rads(), IMU.getMagX_uT(), IMU.getMagY_uT(), IMU.getMagZ_uT());
-  Serial.print("\t");
-  Serial.print(b_x,6);
-  Serial.print("\t");
-  Serial.println(b_z,6);
+  //Angulo Euler por accel
+  float pitch = atan2 (IMU.getAccelY_mss() ,( sqrt ((IMU.getAccelX_mss() * IMU.getAccelX_mss()) + (IMU.getAccelZ_mss() * IMU.getAccelZ_mss()))));
+  float roll = atan2(-IMU.getAccelX_mss() ,( sqrt((IMU.getAccelY_mss() * IMU.getAccelY_mss()) + (IMU.getAccelZ_mss() * IMU.getAccelZ_mss()))));
+
+  // yaw por mag
+
+  float Yh = (IMU.getMagY_uT() * cos(roll)) - (IMU.getMagZ_uT() * sin(roll));
+  float Xh = (IMU.getMagX_uT() * cos(pitch))+(IMU.getMagY_uT() * sin(roll)*sin(pitch)) + (IMU.getMagZ_uT() * cos(roll) * sin(pitch));
+
+  float yaw =  atan2(Yh, Xh);
+
+  pitch *= 180.0/M_PI;
+  roll *= 180.0/M_PI;
+  yaw *= 180.0/M_PI;
+  if(yaw < 0) yaw += 360;
+
+  Serial.print(spacing);
+  Serial.print(String( pitch) );
+  Serial.print(spacing);
+  Serial.print(String( roll));
+  Serial.print(spacing);
+  Serial.println(String( yaw ));
+  
   delay(20);
 }
