@@ -224,46 +224,8 @@ void loop() {
     Serial.print("\r\n");
     cont = 0;
   }
+
+  
   delay(2);
 
-  
-  /*
-  Serial.println("\n\n\n\n\n\n\n\n\n\n==== MPU =====");
-  Serial.printf("Accel:\tX:%f\tY:%f\tZ:%f\n", IMU.getAccelX_mss(), IMU.getAccelY_mss(), IMU.getAccelZ_mss());
-  Serial.printf("Gyro:\tX:%f\tY:%f\tZ:%f\n", IMU.getGyroX_rads(), IMU.getGyroY_rads(), IMU.getGyroZ_rads());
-  Serial.printf("Mag:\tX:%f\tY:%f\tZ:%f\n", IMU.getMagX_uT(), IMU.getMagY_uT(), IMU.getMagZ_uT());
-  */
-
-
-  /*
-   * Cálculos trazidos desta fonte:
-   * https://gist.github.com/shoebahmedadeel/0d8ca4eaa65664492cf1db2ab3a9e572
-   * 
-   * Com algumas adaptações, visto que aqui é usada uma biblioteca que dá valores convertidos
-   * e calibrados.
-   * 
-   * Valores se mostram reais. Por hora, apenas usando acelerômetro e magnetômetro.
-   */
-
-  /*
-  //Angulo Euler por accel
-  float pitch = atan2 (IMU.getAccelY_mss() ,( sqrt ((IMU.getAccelX_mss() * IMU.getAccelX_mss()) + (IMU.getAccelZ_mss() * IMU.getAccelZ_mss()))));
-  float roll = atan2(-IMU.getAccelX_mss() ,( sqrt((IMU.getAccelY_mss() * IMU.getAccelY_mss()) + (IMU.getAccelZ_mss() * IMU.getAccelZ_mss()))));
-
-  // yaw por mag
-
-  float Yh = (IMU.getMagY_uT() * cos(roll)) - (IMU.getMagZ_uT() * sin(roll));
-  float Xh = (IMU.getMagX_uT() * cos(pitch))+(IMU.getMagY_uT() * sin(roll)*sin(pitch)) + (IMU.getMagZ_uT() * cos(roll) * sin(pitch));
-
-  float yaw =  atan2(Yh, Xh);
-
-  pitch *= 180.0/M_PI;
-  roll *= 180.0/M_PI;
-  yaw *= 180.0/M_PI;
-  if(yaw < 0) yaw += 360;
-
-  Serial.printf("\tYaw:%f\tPitch:%f\tRoll:%f", yaw, pitch, roll);
-  
-  delay(230);
-  */
 }
