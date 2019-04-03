@@ -6,6 +6,8 @@
 
 #include "lib/KalmanPortFilter.h" // Kalman Filter
 
+#include "lib/MadgwickAHRS.h" // Madgwick quaternions
+
 pCompassContext CONTEXT;
 
 
@@ -19,6 +21,11 @@ pCompassContext createContext(){
   TMP->kalmanX = createKalmanFilter();
   TMP->kalmanY = createKalmanFilter();
   TMP->kalmanZ = createKalmanFilter(); // Nem em todo caso...
+
+  TMP->QUATERN.q0 = 1.0f;
+  TMP->QUATERN.q1 = 0.0f;
+  TMP->QUATERN.q2 = 0.0f;
+  TMP->QUATERN.q3 = 0.0f;
 
   return TMP;
 }
@@ -175,10 +182,52 @@ IMUOrientation Kalman_V1_Orientation(IMUFusion ORIENT, IMUFLOAT DELTHA_TIME_US){
 }
 
 
+IMUOrientation MadgwickOrientation(IMUQuaternion QT){
+  IMUOrientation TMP;
+
+  // https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU9150/MPU9150_9Axis_MotionApps41.h
+  // Get gravity:
+  SimpleAxis Grav;
+  Grav.x = 2 * (QT.q1*QT.q3 - QT.q0*QT.q2);
+  Grav.y = 2 * (QT.q0*QT.q1 + QT.q2*QT.q3);
+  Grav.z = QT.q0*QT.q0 - QT.q1*QT.q1 - QT.q2*QT.q2 + QT.q3*QT.q3;
+
+  // https://github.com/jrowberg/i2cdevlib/blob/master/Arduino/MPU9150/MPU9150_9Axis_MotionApps41.h
+  // dmpGetYawPitchRoll
+  TMP.pitch = atan(Grav.x / sqrt(Grav.y*Grav.y + Grav.z*Grav.z));
+  TMP.roll = atan(Grav.y / sqrt(Grav.x*Grav.x + Grav.z*Grav.z));
+  TMP.yaw = atan2(2*QT.q1*QT.q2 - 2*QT.q0*QT.q3, 2*QT.q0*QT.q0 + 2*QT.q1*QT.q1 - 1);
+
+  TMP.pitch *= COMP_RAD_TO_DEG;
+  TMP.roll *= COMP_RAD_TO_DEG;
+  TMP.yaw *= COMP_RAD_TO_DEG;
+  return TMP;
+}
+
+IMUOrientation MadgwickKalman_V1_Orientation(IMUFusion ORIENT, IMUFLOAT DELTHA_TIME_US){
+
+  MadgwickAHRSupdateIMU(ORIENT.GYRO.x, ORIENT.GYRO.y, ORIENT.GYRO.z,
+    ORIENT.ACCEL.x, ORIENT.ACCEL.y, ORIENT.ACCEL.z, &(CONTEXT->QUATERN));
+
+  return MadgwickOrientation(CONTEXT->QUATERN);
+}
+
+IMUOrientation MadgwickKalman_V1_FullOrientation(IMUFullFusion ORIENT, IMUFLOAT DELTHA_TIME_US){
+
+  MadgwickAHRSupdate(ORIENT.GYRO.x, ORIENT.GYRO.y, ORIENT.GYRO.z,
+    ORIENT.ACCEL.x, ORIENT.ACCEL.y, ORIENT.ACCEL.z,
+    ORIENT.MAG.x, ORIENT.MAG.y, ORIENT.MAG.z, &(CONTEXT->QUATERN));
+
+  return MadgwickOrientation(CONTEXT->QUATERN);
+}
+
+
 IMUOrientation getFullOrientation(pCompassContext CONTEXTO, FusionMethod METHOD, IMUFullFusion ORIENT, IMUFLOAT DELTHA_TIME_US){
   CONTEXT = CONTEXTO;
   if(METHOD == ALGO_KALMAN_V1){
     return Kalman_V1_FullOrientation(ORIENT,DELTHA_TIME_US);
+  }else if(METHOD == ALGO_MADGWICK_V1){
+    return MadgwickKalman_V1_FullOrientation(ORIENT,DELTHA_TIME_US);
   }
 }
 
@@ -186,37 +235,7 @@ IMUOrientation getOrientation(pCompassContext CONTEXTO, FusionMethod METHOD, IMU
   CONTEXT = CONTEXTO;
   if(METHOD == ALGO_KALMAN_V1){
     return Kalman_V1_Orientation(ORIENT,DELTHA_TIME_US);
+  }else if(METHOD == ALGO_MADGWICK_V1){
+    return MadgwickKalman_V1_Orientation(ORIENT,DELTHA_TIME_US);
   }
-}
-
-
-
-
-
-
-SimpleAxis poseFromAccelMag(SimpleAxis accel, SimpleAxis mag){
-  SimpleAxis resu = accelToEuler(&accel);
-
-  IMUQuaternion m, q;
-
-  IMUFLOAT cosX2 = cos(resu.x / 2.0f);
-  IMUFLOAT sinX2 = sin(resu.x / 2.0f);
-  IMUFLOAT cosY2 = cos(resu.y / 2.0f);
-  IMUFLOAT sinY2 = sin(resu.y / 2.0f);
-
-  q.scalar = cosX2 * cosY2;
-  q.x = sinX2 * cosY2;
-  q.y = cosX2 * sinY2;
-  q.z = -sinX2 * sinY2;
-
-  m.scalar = 0;
-  q.x = mag.x;
-  q.y = mag.y;
-  q.z = mag.z;
-
-  m = quaternionMulti( quaternionMulti(q,m), quaternionConjugate(q) );
-  //m = q * m * q.conjugate();
-
-  resu.z = -atan2(m.y, m.x);
-  return resu;
 }

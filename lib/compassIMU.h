@@ -8,13 +8,14 @@
 
 typedef enum{
   ALGO_KALMAN_V1 = 0,
+  ALGO_MADGWICK_V1
 } FusionMethod;
 
 
 
 // Aplicações com quatérnios
 typedef struct{
-  IMUFLOAT scalar, x, y, z;
+  IMUFLOAT q0, q1, q2, q3;
 } IMUQuaternion;
 
 
@@ -37,6 +38,7 @@ typedef struct{
   IMUFLOAT kalAngleX, kalAngleY, kalAngleZ; // Calculated angle using a Kalman filter
 
   pKalmanFilterSet kalmanX, kalmanY, kalmanZ;
+  IMUQuaternion QUATERN;
 } CompassContext;
 
 typedef CompassContext* pCompassContext;

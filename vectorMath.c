@@ -29,16 +29,16 @@ SimpleAxis accelToEuler(SimpleAxis* accel){
 IMUQuaternion quaternionMulti(IMUQuaternion A, IMUQuaternion B){
   IMUQuaternion C;
 
-  C.scalar = A.scalar * B.scalar - A.x * B.x - A.y * B.y - A.z * B.z;
-  C.x = A.scalar * B.x + A.x * B.scalar + A.y * B.z - A.z * B.y;
-  C.y = A.scalar * B.y - A.x * B.z + A.y * B.scalar + A.z * B.x;
-  C.z = A.scalar * B.z + A.x * B.y - A.y * B.x + A.z * B.scalar;
+  C.q0 = A.q0 * B.q0 - A.q1 * B.q1 - A.q2 * B.q2 - A.q3 * B.q3;
+  C.q1 = A.q0 * B.q1 + A.q1 * B.q0 + A.q2 * B.q3 - A.q3 * B.q2;
+  C.q2 = A.q0 * B.q2 - A.q1 * B.q3 + A.q2 * B.q0 + A.q3 * B.q1;
+  C.q3 = A.q0 * B.q3 + A.q1 * B.q2 - A.q2 * B.q1 + A.q3 * B.q0;
 
   return C;
 }
 
 IMUQuaternion quaternionConjugate(IMUQuaternion A){
-  IMUQuaternion T;T.scalar = A.scalar;
-  T.x=-A.x;T.y=-A.y;T.z=-A.z;
+  IMUQuaternion T;T.q0 = A.q0;
+  T.q1=-A.q1;T.q2=-A.q2;T.q3=-A.q3;
   return T;
 }

@@ -53,7 +53,7 @@ SENS.MAG.z = IMU.getMagZ_uT();
 
 
 // Context, ALGO, IMUFullFusion and time variance in seconds
-IMUOrientation ori = getFullOrientation(CNTX, ALGO_KALMAN_V1, SENS, dt);
+IMUOrientation ori = getFullOrientation(CNTX, ALGO_SOMETHING, SENS, dt);
 
 ```
 
@@ -71,9 +71,11 @@ SENS.GYRO.z = IMU.getGyroZ_rads();
 
 
 // Context, ALGO, IMUFusion and time variance in seconds
-IMUOrientation ori = getOrientation(CNTX, ALGO_KALMAN_V1, SENS, dt);
+IMUOrientation ori = getOrientation(CNTX, ALGO_SOMETHING, SENS, dt);
 
 ```
+
+Remember to replace "ALGO_SOMETHING" by `ALGO_KALMAN_V1` or `ALGO_MADGWICK_V1`.
 
 ### Print orientation
 ```C
