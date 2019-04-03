@@ -1,0 +1,63 @@
+###########################################
+# Syntax Map MPU-Compass-IMU-Calculations
+###########################################
+
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+# compassIMU.h
+
+IMUFLOAT	KEYWORD1
+FusionMethod  KEYWORD1
+IMUQuaternion	KEYWORD1
+IMUOrientation	KEYWORD1
+SimpleAxis	KEYWORD1
+CompassContext	KEYWORD1
+pCompassContext KEYWORD1
+IMUFullFusion KEYWORD1
+IMUFusion KEYWORD1
+
+
+
+# KalmanPortFilter.h
+
+KalmanFilterSet	KEYWORD1
+pKalmanFilterSet	KEYWORD1
+
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+
+# compassIMU.h
+
+createContext	KEYWORD2
+getOrientation  KEYWORD2
+getFullOrientation	KEYWORD2
+poseFromAccelMag	KEYWORD2
+
+
+
+# KalmanPortFilter.h
+
+createKalmanFilter	KEYWORD2
+freeKalmanFilter	KEYWORD2
+kalmanGetAngle	KEYWORD2
+kalmanSetAngle	KEYWORD2
+kalmanGetRate	KEYWORD2
+kalmanSetQangle	KEYWORD2
+kalmanSetQbias	KEYWORD2
+kalmanSetRmeasure	KEYWORD2
+kalmanGetQangle	KEYWORD2
+kalmanGetQbias	KEYWORD2
+kalmanGetRmeasure	KEYWORD2
+
+
+
+# vectorMath.h
+
+normalizeAxis	KEYWORD2
+accelToEuler	KEYWORD2
+quaternionMulti	KEYWORD2
+quaternionConjugate	KEYWORD2
