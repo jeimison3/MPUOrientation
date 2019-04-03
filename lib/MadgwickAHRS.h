@@ -27,8 +27,8 @@ extern volatile float q0, q1, q2, q3;	// quaternion of sensor frame relative to 
 extern "C" {
 #endif
 
-  void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, IMUQuaternion* QT);
-  void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, IMUQuaternion* QT);
+  void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, IMUQuaternion* QT, IMUFLOAT DELTHA_TIME_US);
+  void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, IMUQuaternion* QT, IMUFLOAT DELTHA_TIME_US);
 
 #ifdef __cplusplus
 } // extern "C"

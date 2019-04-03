@@ -22,7 +22,6 @@
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
-#define sampleFreq	500.0f		// sample frequency in Hz
 #define betaDef		0.1f		// 2 * proportional gain
 
 //---------------------------------------------------------------------------------------------------
@@ -42,7 +41,7 @@ float invSqrt(float x);
 //---------------------------------------------------------------------------------------------------
 // AHRS algorithm update
 
-void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, IMUQuaternion* QT) {
+void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, IMUQuaternion* QT, IMUFLOAT DELTHA_TIME_US) {
 	float recipNorm;
 	float s0, s1, s2, s3;
 	float qDot1, qDot2, qDot3, qDot4;
@@ -51,7 +50,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 
 	// Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
 	if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
-		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, QT);
+		MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az, QT, DELTHA_TIME_US);
 		return;
 	}
 
@@ -125,10 +124,10 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	}
 
 	// Integrate rate of change of quaternion to yield quaternion
-	QT->q0 += qDot1 * (1.0f / sampleFreq);
-	QT->q1 += qDot2 * (1.0f / sampleFreq);
-	QT->q2 += qDot3 * (1.0f / sampleFreq);
-	QT->q3 += qDot4 * (1.0f / sampleFreq);
+	QT->q0 += qDot1 * DELTHA_TIME_US;
+	QT->q1 += qDot2 * DELTHA_TIME_US;
+	QT->q2 += qDot3 * DELTHA_TIME_US;
+	QT->q3 += qDot4 * DELTHA_TIME_US;
 
 	// Normalise quaternion
 	recipNorm = invSqrt(QT->q0 * QT->q0 + QT->q1 * QT->q1 + QT->q2 * QT->q2 + QT->q3 * QT->q3);
@@ -141,7 +140,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 //---------------------------------------------------------------------------------------------------
 // IMU algorithm update
 
-void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, IMUQuaternion* QT) {
+void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, IMUQuaternion* QT, IMUFLOAT DELTHA_TIME_US) {
 	float recipNorm;
 	float s0, s1, s2, s3;
 	float qDot1, qDot2, qDot3, qDot4;
@@ -196,10 +195,10 @@ void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, flo
 	}
 
 	// Integrate rate of change of quaternion to yield quaternion
-	QT->q0 += qDot1 * (1.0f / sampleFreq);
-	QT->q1 += qDot2 * (1.0f / sampleFreq);
-	QT->q2 += qDot3 * (1.0f / sampleFreq);
-	QT->q3 += qDot4 * (1.0f / sampleFreq);
+	QT->q0 += qDot1 * DELTHA_TIME_US;
+	QT->q1 += qDot2 * DELTHA_TIME_US;
+	QT->q2 += qDot3 * DELTHA_TIME_US;
+	QT->q3 += qDot4 * DELTHA_TIME_US;
 
 	// Normalise quaternion
 	recipNorm = invSqrt(QT->q0 * QT->q0 + QT->q1 * QT->q1 + QT->q2 * QT->q2 + QT->q3 * QT->q3);

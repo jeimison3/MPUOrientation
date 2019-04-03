@@ -207,7 +207,7 @@ IMUOrientation MadgwickOrientation(IMUQuaternion QT){
 IMUOrientation MadgwickKalman_V1_Orientation(IMUFusion ORIENT, IMUFLOAT DELTHA_TIME_US){
 
   MadgwickAHRSupdateIMU(ORIENT.GYRO.x, ORIENT.GYRO.y, ORIENT.GYRO.z,
-    ORIENT.ACCEL.x, ORIENT.ACCEL.y, ORIENT.ACCEL.z, &(CONTEXT->QUATERN));
+    ORIENT.ACCEL.x, ORIENT.ACCEL.y, ORIENT.ACCEL.z, &(CONTEXT->QUATERN), DELTHA_TIME_US);
 
   return MadgwickOrientation(CONTEXT->QUATERN);
 }
@@ -216,7 +216,7 @@ IMUOrientation MadgwickKalman_V1_FullOrientation(IMUFullFusion ORIENT, IMUFLOAT 
 
   MadgwickAHRSupdate(ORIENT.GYRO.x, ORIENT.GYRO.y, ORIENT.GYRO.z,
     ORIENT.ACCEL.x, ORIENT.ACCEL.y, ORIENT.ACCEL.z,
-    ORIENT.MAG.x, ORIENT.MAG.y, ORIENT.MAG.z, &(CONTEXT->QUATERN));
+    ORIENT.MAG.x, ORIENT.MAG.y, ORIENT.MAG.z, &(CONTEXT->QUATERN), DELTHA_TIME_US);
 
   return MadgwickOrientation(CONTEXT->QUATERN);
 }
