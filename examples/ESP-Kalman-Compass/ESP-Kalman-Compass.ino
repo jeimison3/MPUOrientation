@@ -1,6 +1,7 @@
 /*
- * Código de exemplo para FusionSense com Giroscópio e Acelerômetro.
- * Cálculo de Pitch e Roll
+ * Código de exemplo para FusionSense com Giroscópio, Acelerômetro e Magnetômetro.
+ * -> Código de bússsola.
+ * Cálculo de Pitch, Roll e Yaw
  *
  * Biblioteca para MPU-9250/9255 aqui: https://github.com/jeimison3/MPU9250
  *
@@ -8,7 +9,7 @@
  */
 
 
-#include <MPUFusion.h>
+#include <MPUOrientation.h>
 pCompassContext CNTX = createContext(); // Cria contexto de variaveis
 uint32_t timer; // Calculo de tempo em uS
 
@@ -66,9 +67,10 @@ void setup() {
 
   // Lembre-se de calibrar o magnetômetro para o seu local.
 
-  IMU.setMagCalX(-13.70, 1.43);
-  IMU.setMagCalY(-20.12, 1.56);
-  IMU.setMagCalZ(-68.43, 0.60);
+  //Magnetometro:
+  IMU.setMagCalX(-9.676493, 1.237077);
+  IMU.setMagCalY(-16.273720, 1.232967);
+  IMU.setMagCalZ(-56.603615, 0.724327);
 
   delay(100); // Tempo para sensores estabilizarem
 
@@ -126,9 +128,9 @@ void loop() {
   // read the sensor
   IMU.readSensor();
 
-  // Uso de MPUFusion:
+  // Uso de MPUFullFusion:
 
-  IMUFusion SENS;
+  IMUFullFusion SENS;
   SENS.ACCEL.x = IMU.getAccelX_mss();
   SENS.ACCEL.y = IMU.getAccelY_mss();
   SENS.ACCEL.z = IMU.getAccelZ_mss();
@@ -137,12 +139,16 @@ void loop() {
   SENS.GYRO.y = IMU.getGyroY_rads();
   SENS.GYRO.z = IMU.getGyroZ_rads();
 
-  IMUOrientation ori = getOrientation(CNTX, ALGO_KALMAN_V1, SENS, dt);
+  SENS.MAG.x = IMU.getMagX_uT();
+  SENS.MAG.y = IMU.getMagY_uT();
+  SENS.MAG.z = IMU.getMagZ_uT();
+
+  IMUOrientation ori = getFullOrientation(CNTX, ALGO_KALMAN_V1, SENS, dt);
 
 
 
   if(cont++ % 30 == 29){ // 125 a intervalo de 2ms equivalente a 0.25 seg
-    Serial.printf( "\t%f\t%f\n", ori.pitch, ori.roll );
+    Serial.printf( "\t%f\t%f\t%f\n", ori.pitch, ori.roll, ori.yaw );
     cont = 0;
   }
 

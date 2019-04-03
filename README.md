@@ -1,4 +1,4 @@
-# MPU Compass with IMU Calculations
+# MPUOrientation - Compass with IMU calculations
 
 ## Approach
 Not every sensor comes with a library which include orientation calculation.
@@ -13,7 +13,7 @@ The code pressupose a valid and calibrated value to sensors input.
 ## Using
 ### Including LIB
 ```C
-#include <MPUFusion.h>
+#include <MPUOrientation.h>
 ```
 
 ### Creating contexts
@@ -85,13 +85,12 @@ This and other examples you can find in examples folder.
 ## Some optimizations
 We consider to port the [`libfixmath`](https://code.google.com/archive/p/libfixmath/) to reduce cycles of calculation. Maybe a #define will be included in next versions of `compassSet.h`.
 
-## Description about example folders
+## Description about examples
 | Examble path | Functionality |
 | --- | --- |
-| ESP8266 | A compatible code with ESP8266 accompanying calculation from axis `Pitch`, `Roll` and `Yaw` using magnetometer for orientation. |
-| ESP32 | A compatible code with ESP32 accompanying calculation from axis `Pitch`, `Roll` and `Yaw` using magnetometer for orientation. |
-| ESP32-Kalman-NO-MAG | Compatible code with ESP32 with Kalman Filter and Complementary Filter applied to calculate the axis `Pitch` and `Roll`. |
-| ESP32-Kalman-Compass | Compatible code with ESP32 applying Kalman Filter and Complementary Filter to calculate the axis `Pitch`, `Roll` and `Yaw` |
+| ESP-NO-LIB | Calculate the axis `Pitch`, `Roll` and `Yaw` using magnetometer without the library. |
+| ESP-Kalman-NO-MAG | Calculate the axis `Pitch` and `Roll` with the library. |
+| ESP-Kalman-Compass | Calculate the axis `Pitch`, `Roll` and `Yaw` with the library. |
 
 ## Libraries
 - **[`Kalman Filter`](https://github.com/TKJElectronics/KalmanFilter)**. Now is already ported.
