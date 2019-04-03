@@ -1,9 +1,14 @@
-# MPU Compass IMU Calculations (ESP32 and ESP8266 based)
+# MPU Compass with IMU Calculations
 
-## Differences
+## Approach
+Not every sensor comes with a library which include orientation calculation.
+This library is compatible with C and C++ compilers and solve the calculations by applying the Kalman filter.
+
+### ESP32 native Core problem with I2C
 The Arduino IDE with Espressif native port for ESP32 has conflicted with `Wire` library.
 So I met the core of [stickbreaker (click here)](https://github.com/stickbreaker/arduino-esp32/tree/patch-2) so currently is not necessary any change in the code between ESP32 and ESP8266.
 The code pressupose a valid and calibrated value to sensors input.
+
 
 ## Using
 ### Including LIB
