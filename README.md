@@ -93,6 +93,8 @@ We consider to port the [`libfixmath`](https://code.google.com/archive/p/libfixm
 | ESP-NO-LIB | Calculate the axis `Pitch`, `Roll` and `Yaw` using magnetometer without the library. |
 | ESP-Kalman-NO-MAG | Calculate the axis `Pitch` and `Roll` with the library. |
 | ESP-Kalman-Compass | Calculate the axis `Pitch`, `Roll` and `Yaw` with the library. |
+| ESP-Madgwick-Kalman-Full-Compare | A comparision between Kalman Filter and Madgwick quaternions calculation result. Compatible with processing script "Graph" |
+| ESP-All-Full-Compare | A comparision bretween all fusion algorithms. Compatible with processing script "Graph3Mod". |
 
 ## Libraries
 - **[`Kalman Filter`](https://github.com/TKJElectronics/KalmanFilter)**. Now is already ported.
